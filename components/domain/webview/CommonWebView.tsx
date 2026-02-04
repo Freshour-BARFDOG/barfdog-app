@@ -1,9 +1,11 @@
 import { TokenStorage } from "@/utils/auth/tokenStorage";
 import CookieManager from "@preeternal/react-native-cookie-manager";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Linking, Platform } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
+
+const APP_SCHEME = "barfdogapp://";
 
 interface CommonWebViewProps {
   baseUrl: string;
@@ -153,7 +155,20 @@ export default function CommonWebView({
     (req: any) => {
       const url = req.url;
 
-      // 1) http/https가 아니면 (앱 스킴, tel:, mailto: 등) → 외부로
+      // 0) about:blank는 무시 (결제 모듈 등에서 사용)
+      if (url === "about:blank") {
+        return true;
+      }
+
+      // 1) 자체 앱 스킴인 경우 → expo-router로 직접 라우팅
+      if (url.startsWith(APP_SCHEME)) {
+        const path = url.replace(APP_SCHEME, "/");
+        console.log("🔗 앱 딥링크 감지, 라우팅:", path);
+        router.push(path as Href);
+        return false;
+      }
+
+      // 2) http/https가 아니면 (tel:, mailto: 등) → 외부로
       if (!url.startsWith("http")) {
         Linking.openURL(url);
         return false;
@@ -167,12 +182,12 @@ export default function CommonWebView({
         }
       })();
 
-      // 2) 허용된 호스트라면 WebView 안에서 열기
+      // 3) 허용된 호스트라면 WebView 안에서 열기
       if (allowedHosts.includes(host)) {
         return true;
       }
 
-      // 3) 그 외는 외부 브라우저로
+      // 4) 그 외는 외부 브라우저로
       Linking.openURL(url);
       return false;
     },

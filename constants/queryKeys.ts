@@ -10,4 +10,7 @@ const queryKeys = {
     GET_SUBSCRIPTION_CHECKOUT: "getSubscriptionCheckout",
     GET_GENERAL_CHECKOUT: "getGeneralCheckout",
   },
+  STORE: {
+    BASE: "store",
+  },
 } as const;
