@@ -5,4 +5,9 @@ const queryKeys = {
     BASE: "auth",
     GET_USER_INFO: "getUserInfo",
   },
+  CHECKOUT: {
+    BASE: "checkout",
+    GET_SUBSCRIPTION_CHECKOUT: "getSubscriptionCheckout",
+    GET_GENERAL_CHECKOUT: "getGeneralCheckout",
+  },
 } as const;

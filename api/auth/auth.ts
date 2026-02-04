@@ -1,13 +1,13 @@
 import { validateApiResponse } from "@/utils/auth/apiResponseUtils";
 import { LoginValues } from "@/utils/validation/auth/login";
-import { apiClient, authClient } from "../axiosInstance";
+import { apiClient, publicAxios } from "../axiosInstance";
 
 const login = async (body: LoginValues) => {
   console.log("📤 로그인 요청:", body);
 
-  const response = await authClient.post(
+  const response = await publicAxios.post(
     "/api/v2/public/accounts/signin",
-    body
+    body,
   );
   console.log("response:", response);
 

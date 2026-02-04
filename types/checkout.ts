@@ -1,9 +1,10 @@
 import { PAYMENT_METHOD } from "@/constants/checkout";
 import { UrlObject, ValueOfTuple } from "./common";
-import { DeliveryAddress } from "./delivery";
-import { DELIVERY_PLAN, MEAL_PLAN, PLAN } from "./subscription";
+import { DeliveryAddress, DeliveryRequest } from "./delivery";
+import { GENERAL_ITEM_TYPE, ORDER_STATUS_LABEL } from "./order";
+import { DELIVERY_PLAN, MEAL_PLAN, PLAN_TYPE } from "./subscription";
 
-interface IamportSubscribeResponse {
+interface BillingAgainPaymentResponse {
   code: number;
   message: string;
   response?: {
@@ -13,7 +14,7 @@ interface IamportSubscribeResponse {
   };
 }
 
-interface CreateIamportSubscriptionPaymentRequest {
+interface BillingAgainPaymentRequest {
   customer_uid: string;
   merchant_uid?: string | null;
   memberCouponId?: number | null;
@@ -22,8 +23,6 @@ interface CreateIamportSubscriptionPaymentRequest {
   buyer_name: string;
   buyer_tel: string;
   buyer_email: string;
-  buyer_addr: string;
-  buyer_postcode: string;
 }
 
 interface SuccessSubscriptionPaymentRequest {
@@ -60,7 +59,7 @@ interface SubscribeInfo {
 }
 
 interface PlanInfo {
-  name: Plan | string;
+  name: PlanType | string;
   /** 구독 주기(주) */
   weeks: DeliveryPlan;
   /** 구독 주기(일) */
@@ -138,25 +137,138 @@ interface PaymentInfoRequest {
   saveReward: number;
 }
 
-interface PrepareSubscriptionPaymentResponse {
+interface PreparePaymentResponse {
   orderId: number;
   orderStatus: string;
   merchantUid: string;
 }
 
+// 일반 주문 시트 조회 요청
+interface GetGeneralCheckoutRequest {
+  itemList: GeneralItemRequest[];
+}
+
+interface GeneralItemRequest {
+  itemId: number;
+  itemAmount: number;
+  itemOptionList: {
+    optionId: number;
+    optionAmount: number;
+  }[];
+}
+
+interface GetGeneralCheckoutResponse {
+  memberInfo: MemberInfo;
+  paymentInfo: GeneralPaymentInfo;
+  defaultAddress: DeliveryAddress | null;
+  itemList: GeneralItem[];
+  pakageableDeliveryList: PackageableDelivery[];
+}
+
+interface GeneralPaymentInfo {
+  originalPrice: number; // 상품 총액 - 원가
+  paymentPrice: number; // 상품 총액 - 기본 할인 적용
+  discountProduct: number; // 기본 할인금
+  deliveryPrice: number;
+  freeCondition: number; // 배송비 무료 최소 결제 금액
+}
+
+interface PackageableDelivery {
+  id: number;
+  petName: string;
+  deliveryName: string;
+  recipientName: string;
+  phoneNumber: string;
+  zipcode: string;
+  street: string;
+  detailAddress: string;
+  request: string;
+  deliveryDate: string; // "YYYY-MM-DD"
+}
+
+interface GeneralItem {
+  itemId: number;
+  orderItemId?: number;
+  name: string;
+  displayImageUrl: UrlObject;
+  amount: number;
+  totalOriginalPrice: number; // 상품 + 옵션: 원금
+  totalSalePrice: number; // 상품 + 옵션: 기본 할인 적용 금액
+  totalDiscountProduct: number; // 상품 + 옵션 기본 할인금
+  deliveryFree?: boolean;
+  type: GeneralItemType;
+  status?: OrderStatus;
+  itemOptionList: GeneralItemOption[];
+}
+
+interface GeneralItemOption {
+  id: number;
+  name: string;
+  amount: number;
+  totalOriginalPrice: number;
+}
+
+interface PrepareGeneralPaymentRequest {
+  itemList: GeneralItemRequest[];
+  memberCouponId?: number | null; // null 또는 필드 자체 누락 모두 허용
+  deliveryInfo: PrepareGeneralPaymentDeliveryInfo;
+  paymentInfo: PrepareGeneralPaymentPaymentInfo;
+}
+// 배송 정보
+interface PrepareGeneralPaymentDeliveryInfo {
+  address: DeliveryRequest;
+  deliveryId: number | null; // null이면 신규 배송, 숫자면 묶음배송 ID
+}
+
+// 결제 정보
+interface PrepareGeneralPaymentPaymentInfo {
+  originalPrice: number; // 상품 원가 총합
+  discountTotal: number; // 전체 할인 합계
+  discountProduct: number; // 상품 할인
+  discountReward: number; // 적립금 할인
+  discountCoupon: number; // 쿠폰 할인
+  deliveryPrice: number; // 배송비
+  paymentPrice: number; // 실제 결제 금액
+  overDiscount: number; // 과할인 보정 값
+  saveReward: number; // 적립 예정 포인트
+  paymentMethod: string; // 예: "CREDIT_CARD"
+}
+
+// 구독, 일반 결제 주문 정보 저장 응답
+interface PreparePaymentResponse {
+  orderId: number;
+  merchantUid: string;
+  orderStatus: string; // 'BEFORE_PAYMENT'와 같은 상태
+}
+
+interface SuccessGeneralPaymentRequest {
+  impUid: string;
+  merchantUid: string | null;
+  basketInfo: {
+    basketIdList: number[];
+  } | null;
+}
+
 type PaymentMethod = keyof typeof PAYMENT_METHOD;
-type Plan = ValueOfTuple<typeof PLAN>;
+type PlanType = ValueOfTuple<typeof PLAN_TYPE>;
 type DeliveryPlan = ValueOfTuple<typeof DELIVERY_PLAN>;
 type MealPlan = ValueOfTuple<typeof MEAL_PLAN>;
+type OrderStatus = keyof typeof ORDER_STATUS_LABEL;
+type GeneralItemType = ValueOfTuple<typeof GENERAL_ITEM_TYPE>;
+
 export type {
-  CreateIamportSubscriptionPaymentRequest,
+  BillingAgainPaymentRequest,
+  BillingAgainPaymentResponse,
   DeliveryPlan,
-  IamportSubscribeResponse,
+  GetGeneralCheckoutRequest,
+  GetGeneralCheckoutResponse,
   MealPlan,
   PaymentMethod,
-  Plan,
+  PlanType,
+  PrepareGeneralPaymentRequest,
+  PreparePaymentResponse,
   PrepareSubscriptionPaymentRequest,
-  PrepareSubscriptionPaymentResponse,
   SubscriptionCheckoutResponse,
+  SuccessGeneralPaymentRequest,
   SuccessSubscriptionPaymentRequest,
 };

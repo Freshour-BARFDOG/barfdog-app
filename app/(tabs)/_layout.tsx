@@ -1,4 +1,3 @@
-import BottomTabBar from "@/components/layout/BottomTabBar";
 import { colors } from "@/constants/colors";
 import { Tabs } from "expo-router";
 import React from "react";
@@ -14,6 +13,7 @@ import NoteActiveIcon from "@/assets/icons/tab/note-active.svg";
 import NoteIcon from "@/assets/icons/tab/note.svg";
 import StoreActiveIcon from "@/assets/icons/tab/store-active.svg";
 import StoreIcon from "@/assets/icons/tab/store.svg";
+import BottomTabBar from "@/components/layout/bottomTabBar/BottomTabBar";
 
 export default function TabLayout() {
   return (

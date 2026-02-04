@@ -1,6 +1,6 @@
 import { TokenStorage } from "@/utils/auth/tokenStorage";
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
-import { authClient } from "./axiosInstance";
+import { publicAxios } from "./axiosInstance";
 
 type Cfg = InternalAxiosRequestConfig & { _retry?: boolean };
 
@@ -17,7 +17,7 @@ export function attachAuthInterceptors(apiInstance: AxiosInstance) {
       }
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => Promise.reject(error),
   );
 
   // Response 인터셉터: 401 처리 및 토큰 갱신
@@ -29,7 +29,7 @@ export function attachAuthInterceptors(apiInstance: AxiosInstance) {
 
   const flushQueue = (error?: any, token?: string) => {
     refreshQueue.forEach((promise) =>
-      error ? promise.reject(error) : token && promise.resolve(token)
+      error ? promise.reject(error) : token && promise.resolve(token),
     );
     refreshQueue = [];
   };
@@ -58,8 +58,8 @@ export function attachAuthInterceptors(apiInstance: AxiosInstance) {
 
         try {
           // 리프레시 토큰으로 새 액세스 토큰 발급
-          const response = await authClient.post(
-            "/api/v2/public/accounts/refresh"
+          const response = await publicAxios.post(
+            "/api/v2/public/accounts/refresh",
           );
 
           // 응답 헤더 또는 바디에서 토큰 추출
@@ -100,6 +100,6 @@ export function attachAuthInterceptors(apiInstance: AxiosInstance) {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 }

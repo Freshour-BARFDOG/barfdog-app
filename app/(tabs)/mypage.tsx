@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MyPageScreen() {
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView edges={["top"]} className="flex-1 bg-gray-0">
       <CommonWebView
         baseUrl={process.env.EXPO_PUBLIC_WEB_BASE_URL!}
         initialPath="/mypage"

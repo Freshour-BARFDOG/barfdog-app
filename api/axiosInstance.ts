@@ -14,7 +14,7 @@ export const apiClient = axios.create({
 });
 
 // Auth 전용 인스턴스 (토큰 없이 사용 - 로그인, 회원가입, 리프레시 등)
-export const authClient = axios.create({
+export const publicAxios = axios.create({
   baseURL,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },

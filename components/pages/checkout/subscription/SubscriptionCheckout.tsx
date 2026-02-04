@@ -30,7 +30,7 @@ export default function SubscriptionCheckout() {
 
   const params = useMemo(
     () => parseSubscriptionParams(searchParams),
-    [searchParams]
+    [searchParams],
   );
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function SubscriptionCheckout() {
     console.log("params", params);
     console.log(
       "[SubscriptionCheckout] searchParams:",
-      Object.fromEntries(searchParams as any)
+      Object.fromEntries(searchParams as any),
     );
     console.log("[SubscriptionCheckout] parsed params:", params);
 
@@ -54,6 +54,7 @@ export default function SubscriptionCheckout() {
 
         const {
           // 1차 응답/부가정보
+          impSuccess,
           errorMsg,
           subscribeId,
           // again/검증용 데이터
@@ -65,8 +66,6 @@ export default function SubscriptionCheckout() {
           buyer_name,
           buyer_tel,
           buyer_email,
-          buyer_addr,
-          buyer_postcode,
           paymentMethod,
         } = params;
 
@@ -77,12 +76,26 @@ export default function SubscriptionCheckout() {
 
           if (subscribeId) {
             router.replace(
-              CHECKOUT_ROUTES.SUBSCRIPTION.order(subscribeId) as Href
+              CHECKOUT_ROUTES.SUBSCRIPTION.order(subscribeId) as Href,
             );
           } else {
+            router.replace("/");
             console.error(
-              "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가"
+              "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가",
             );
+          }
+          return;
+        }
+
+        // impSuccess가 false면 빌링키 발급 실패 → 취소로 간주
+        if (!impSuccess) {
+          await failPayment(orderId);
+          if (subscribeId) {
+            router.replace(
+              CHECKOUT_ROUTES.SUBSCRIPTION.order(subscribeId) as Href,
+            );
+          } else {
+            router.replace("/");
           }
           return;
         }
@@ -96,8 +109,6 @@ export default function SubscriptionCheckout() {
           buyer_name,
           buyer_tel,
           buyer_email,
-          buyer_addr,
-          buyer_postcode,
         });
 
         if (iamportResp.code !== 0) {
@@ -127,29 +138,37 @@ export default function SubscriptionCheckout() {
         if (isValid) {
           await successPayment({ orderId, body: finalBody });
           router.replace(
-            CHECKOUT_ROUTES.SUBSCRIPTION.completed(orderId) as Href
+            CHECKOUT_ROUTES.SUBSCRIPTION.completed(orderId) as Href,
           );
         } else {
           await failPayment(orderId);
           if (subscribeId) {
             router.replace(
-              CHECKOUT_ROUTES.SUBSCRIPTION.failed(subscribeId) as Href
+              CHECKOUT_ROUTES.SUBSCRIPTION.failed(subscribeId) as Href,
             );
           } else {
+            router.replace("/");
             console.error(
-              "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가"
+              "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가",
             );
           }
         }
       } catch (e) {
         console.error("[MobileSubscriptionPaymentRedirect] 처리 실패:", e);
+
+        // 실패 API 호출
+        if (params?.orderId) {
+          await failPayment(params.orderId);
+        }
+
         if (params?.subscribeId) {
           router.replace(
-            CHECKOUT_ROUTES.SUBSCRIPTION.failed(params.subscribeId) as Href
+            CHECKOUT_ROUTES.SUBSCRIPTION.failed(params.subscribeId) as Href,
           );
         } else {
+          router.replace("/");
           console.error(
-            "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가"
+            "[SubscriptionCheckout] subscribeId 누락으로 리다이렉트 불가",
           );
         }
       }

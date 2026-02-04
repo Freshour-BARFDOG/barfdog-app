@@ -1,4 +1,5 @@
 import { TokenStorage } from "@/utils/auth/tokenStorage";
+import CookieManager from "@preeternal/react-native-cookie-manager";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Linking, Platform } from "react-native";
@@ -15,10 +16,38 @@ export default function CommonWebView({
 }: CommonWebViewProps) {
   const ref = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState<boolean>(false);
+  const [isCookieReady, setIsCookieReady] = useState<boolean>(false); // 쿠키 설정 완료 여부
   const isTokenInjectedRef = useRef<boolean>(false); // 토큰 주입 플래그
 
   // 전체 URL 생성
   const fullUrl = `${baseUrl}${initialPath}`;
+
+  // WebView 로드 전 쿠키에 토큰 주입
+  useEffect(() => {
+    const injectCookieBeforeLoad = async () => {
+      try {
+        const accessToken = await TokenStorage.getAccessToken();
+
+        if (accessToken) {
+          // 네이티브 쿠키 저장소에 토큰 설정
+          await CookieManager.set(baseUrl, {
+            name: "accessToken",
+            value: accessToken,
+            path: "/",
+            secure: true,
+            httpOnly: false,
+          });
+          console.log("🍪 쿠키에 토큰 주입 완료");
+        }
+      } catch (error) {
+        console.error("쿠키 설정 실패:", error);
+      } finally {
+        setIsCookieReady(true);
+      }
+    };
+
+    injectCookieBeforeLoad();
+  }, [baseUrl]);
 
   // 안드로이드 하드웨어 뒤로가기: 웹 뒤로가기 우선
   useEffect(() => {
@@ -149,6 +178,11 @@ export default function CommonWebView({
     },
     [baseUrl]
   );
+
+  // 쿠키 설정 완료 전에는 WebView 렌더링하지 않음
+  if (!isCookieReady) {
+    return null;
+  }
 
   return (
     <WebView

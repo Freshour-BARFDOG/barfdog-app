@@ -11,4 +11,15 @@ interface DeliveryAddress {
   request: string;
 }
 
-export type { DeliveryAddress };
+interface DeliveryRequest {
+  deliveryName: string;
+  recipientName: string;
+  phoneNumber: string;
+  zipcode: string;
+  street: string;
+  detailAddress: string;
+  isDefault: boolean;
+  request: string;
+}
+
+export type { DeliveryAddress, DeliveryRequest };

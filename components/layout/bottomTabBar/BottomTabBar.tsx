@@ -1,3 +1,4 @@
+import Text from "@/components/ui/text/Text";
 import { colors } from "@/styles/theme";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React, { useEffect } from "react";
@@ -8,7 +9,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import Text from "../ui/text/Text";
 
 export default function BottomTabBar({
   state,
