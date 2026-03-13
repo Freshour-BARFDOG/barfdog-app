@@ -1,15 +1,13 @@
 import axios from "axios";
 import { attachAuthInterceptors } from "./interceptors";
 
-const baseURL =
-  process.env.NODE_ENV === "production"
-    ? process.env.EXPO_PUBLIC_API_URL_PRODUCT
-    : process.env.EXPO_PUBLIC_API_URL_DEV;
+const baseURL = process.env.EXPO_PUBLIC_API_URL;
 
 // 일반 API 요청용 인스턴스
 export const apiClient = axios.create({
   baseURL,
   timeout: 10000,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -17,6 +15,7 @@ export const apiClient = axios.create({
 export const publicAxios = axios.create({
   baseURL,
   timeout: 10000,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
