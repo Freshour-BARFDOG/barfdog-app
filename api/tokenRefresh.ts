@@ -1,10 +1,10 @@
+import { WEBVIEW_MESSAGES } from "@/constants/webview";
 import { TokenStorage } from "@/utils/auth/tokenStorage";
 import { DeviceEventEmitter } from "react-native";
 import { publicAxios } from "./axiosInstance";
 
 // ─── 이벤트 상수 ───────────────────────────────────────────────────────────────
 export const TOKEN_REFRESHED = "TOKEN_REFRESHED" as const;
-export const TOKEN_REFRESH_FAILED = "TOKEN_REFRESH_FAILED" as const;
 
 // ─── 내부 타입 ─────────────────────────────────────────────────────────────────
 type QueueItem = {
@@ -70,7 +70,7 @@ export const refreshAccessToken = async (): Promise<string> => {
     await TokenStorage.clearAllTokens();
 
     // CommonWebView 이벤트 리스너 → TOKEN_REFRESH_FAILED 전송 + 로그인 이동
-    DeviceEventEmitter.emit(TOKEN_REFRESH_FAILED);
+    DeviceEventEmitter.emit(WEBVIEW_MESSAGES.TOKEN_REFRESH_FAILED);
 
     throw error;
   } finally {

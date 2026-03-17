@@ -1,19 +1,16 @@
-import {
-  refreshAccessToken,
-  TOKEN_REFRESH_FAILED,
-  TOKEN_REFRESHED,
-} from "@/api/tokenRefresh";
+import { refreshAccessToken } from "@/api/tokenRefresh";
+import { WEBVIEW_MESSAGES } from "@/constants/webview";
+import { useWebViewTokenSync } from "@/hooks/useWebViewTokenSync";
 import { TokenStorage } from "@/utils/auth/tokenStorage";
-import CookieManager from "@preeternal/react-native-cookie-manager";
+import { getUrlHost } from "@/utils/webview/url";
 import { Href, router } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BackHandler, Linking, Platform } from "react-native";
 import {
-  BackHandler,
-  DeviceEventEmitter,
-  Linking,
-  Platform,
-} from "react-native";
-import { WebView, WebViewMessageEvent } from "react-native-webview";
+  WebView,
+  WebViewMessageEvent,
+  WebViewNavigation,
+} from "react-native-webview";
 
 const APP_SCHEME = "barfdogapp://";
 
@@ -28,36 +25,15 @@ export default function CommonWebView({
 }: CommonWebViewProps) {
   const ref = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState(false);
-  const [isCookieReady, setIsCookieReady] = useState(false);
-  const isTokenInjectedRef = useRef(false);
+
+  const { isCookieReady, handleWebViewLoad } = useWebViewTokenSync(
+    baseUrl,
+    ref,
+  );
 
   const fullUrl = `${baseUrl}${initialPath}`;
 
-  // ─── WebView 로드 전 쿠키 주입 ────────────────────────────────────────────
-  useEffect(() => {
-    const injectCookieBeforeLoad = async () => {
-      try {
-        const accessToken = await TokenStorage.getAccessToken();
-        if (accessToken) {
-          await CookieManager.set(baseUrl, {
-            name: "accessToken",
-            value: accessToken,
-            path: "/",
-            secure: true,
-            httpOnly: false,
-          });
-        }
-      } catch (error) {
-        console.error("쿠키 설정 실패:", error);
-      } finally {
-        setIsCookieReady(true);
-      }
-    };
-
-    injectCookieBeforeLoad();
-  }, [baseUrl]);
-
-  // ─── 안드로이드 하드웨어 뒤로가기 ─────────────────────────────────────────
+  // ─── 안드로이드 하드웨어 뒤로가기 ───────────────────────────────────────
   useEffect(() => {
     if (Platform.OS !== "android") return;
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -70,72 +46,16 @@ export default function CommonWebView({
     return () => sub.remove();
   }, [canGoBack]);
 
-  // ─── RN 토큰 이벤트 → WebView 동기화 ─────────────────────────────────────
-  // refreshAccessToken() 호출 주체가 누구든(RN 인터셉터 or REQUEST_TOKENS 핸들러)
-  // 이 단일 경로로만 WebView에 토큰이 전달됨
-  useEffect(() => {
-    const onRefreshed = DeviceEventEmitter.addListener(
-      TOKEN_REFRESHED,
-      async ({ token }: { token: string }) => {
-        try {
-          await CookieManager.set(baseUrl, {
-            name: "accessToken",
-            value: token,
-            path: "/",
-            secure: true,
-            httpOnly: false,
-          });
-          ref.current?.postMessage(
-            JSON.stringify({
-              type: "INJECT_TOKENS",
-              payload: { accessToken: token },
-            }),
-          );
-        } catch (error) {
-          console.error("WebView 토큰 동기화 실패:", error);
-        }
-      },
-    );
-
-    const onFailed = DeviceEventEmitter.addListener(
-      TOKEN_REFRESH_FAILED,
-      () => {
-        ref.current?.postMessage(
-          JSON.stringify({ type: "TOKEN_REFRESH_FAILED" }),
-        );
-        router.replace("/auth/login");
-      },
-    );
-
-    return () => {
-      onRefreshed.remove();
-      onFailed.remove();
-    };
-  }, [baseUrl]);
-
-  // ─── WebView 초기 로드 시 토큰 주입 (1회) ─────────────────────────────────
-  const handleWebViewLoad = useCallback(async () => {
-    if (isTokenInjectedRef.current) return;
-
-    const accessToken = await TokenStorage.getAccessToken();
-    if (accessToken) {
-      ref.current?.postMessage(
-        JSON.stringify({ type: "INJECT_TOKENS", payload: { accessToken } }),
-      );
-      isTokenInjectedRef.current = true;
-    }
-  }, []);
-
-  // ─── WebView → Native 메시지 수신 ─────────────────────────────────────────
+  // ─── WebView → Native 메시지 수신 ────────────────────────────────────────
   const handleMessage = useCallback(async (event: WebViewMessageEvent) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
 
       switch (data.type) {
-        case "REQUEST_TOKENS": {
+        case WEBVIEW_MESSAGES.REQUEST_TOKENS: {
           // WebView 401 → RN에 갱신 위임
           // refreshAccessToken이 완료되면 TOKEN_REFRESHED 이벤트 발화
-          // → 위 이벤트 리스너가 쿠키 갱신 + INJECT_TOKENS 전송
+          // → useWebViewTokenSync 이벤트 리스너가 쿠키 갱신 + INJECT_TOKENS 전송
           try {
             await refreshAccessToken();
           } catch {
@@ -144,40 +64,42 @@ export default function CommonWebView({
           break;
         }
 
-        case "LOGOUT":
+        case WEBVIEW_MESSAGES.LOGOUT:
           await TokenStorage.clearAllTokens();
           router.replace("/auth/login");
           break;
 
-        case "TOKEN_UPDATED": {
-          const { accessToken: updatedToken } = data.payload;
-          if (updatedToken) await TokenStorage.setAccessToken(updatedToken);
-          break;
-        }
-
-        case "DEBUG_LOG": {
+        case WEBVIEW_MESSAGES.DEBUG_LOG: {
           const { message, data: logData, timestamp } = data.payload;
           console.log(`🌐 [WebView ${timestamp}] ${message}`, logData || "");
           break;
         }
 
         default:
-          console.log("📨 WebView 메시지:", data);
+          break;
       }
     } catch (error) {
       console.error("메시지 파싱 실패:", error);
     }
   }, []);
 
-  // ─── URL 라우팅 제어 ───────────────────────────────────────────────────────
-  const allowedHosts = [
-    new URL(baseUrl).host,
-    "service.iamport.kr",
-  ];
+  // ─── URL 라우팅 제어 ──────────────────────────────────────────────────────
+  const allowedHosts = useMemo(() => {
+    try {
+      return [new URL(baseUrl).host, "service.iamport.kr"];
+    } catch {
+      return ["service.iamport.kr"];
+    }
+  }, [baseUrl]);
+
+  const handleNavigationStateChange = useCallback(
+    (s: WebViewNavigation) => setCanGoBack(s.canGoBack),
+    [],
+  );
 
   const onShouldStart = useCallback(
-    (req: any) => {
-      const url = req.url;
+    (req: WebViewNavigation) => {
+      const { url } = req;
 
       if (url === "about:blank") return true;
 
@@ -192,20 +114,12 @@ export default function CommonWebView({
         return false;
       }
 
-      const host = (() => {
-        try {
-          return new URL(url).host;
-        } catch {
-          return "";
-        }
-      })();
-
-      if (allowedHosts.includes(host)) return true;
+      if (allowedHosts.includes(getUrlHost(url))) return true;
 
       Linking.openURL(url);
       return false;
     },
-    [baseUrl],
+    [allowedHosts],
   );
 
   if (!isCookieReady) return null;
@@ -214,7 +128,7 @@ export default function CommonWebView({
     <WebView
       ref={ref}
       source={{ uri: fullUrl }}
-      onNavigationStateChange={(s) => setCanGoBack(s.canGoBack)}
+      onNavigationStateChange={handleNavigationStateChange}
       onShouldStartLoadWithRequest={onShouldStart}
       onLoad={handleWebViewLoad}
       onMessage={handleMessage}
