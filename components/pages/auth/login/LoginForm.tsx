@@ -1,5 +1,7 @@
 import { useLogin } from "@/api/auth/queries/useLogin";
+import { useOAuthLogin } from "@/api/auth/mutations/useOAuthLogin";
 import Button from "@/components/ui/button/Button";
+import { SocialLoginButtons } from "@/components/ui/button/SocialLoginButton";
 import InputField from "@/components/ui/input/InputField";
 import Text from "@/components/ui/text/Text";
 import {
@@ -21,6 +23,7 @@ import {
 
 export default function LoginForm() {
   const { mutate: login } = useLogin();
+  const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuthLogin();
   const {
     control,
     handleSubmit,
@@ -106,11 +109,15 @@ export default function LoginForm() {
                 )}
               />
             </View>
-            <View>
+            <View className="w-full gap-12">
               <Button size="lg" onPress={handleSubmit(onSubmit)} fullWidth>
                 로그인
               </Button>
-              <View></View>
+
+              <SocialLoginButtons
+                onPress={(provider) => oauthLogin(provider)}
+                disabled={isOAuthPending}
+              />
             </View>
           </View>
         </ScrollView>

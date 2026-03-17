@@ -1,0 +1,85 @@
+import type { ExpoConfig } from "expo/config";
+
+const config: ExpoConfig = {
+  name: "barfdog-app",
+  slug: "barfdog-app",
+  version: "1.0.0",
+  owner: "freshour",
+  orientation: "portrait",
+  icon: "./assets/icons/favicon/apple-icon-180x180.png",
+  scheme: "barfdogapp",
+  userInterfaceStyle: "automatic",
+  newArchEnabled: true,
+  ios: {
+    supportsTablet: true,
+    bundleIdentifier: "com.freshour.barfdogapp",
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
+  },
+  android: {
+    adaptiveIcon: {
+      backgroundColor: "#E6F4FE",
+      foregroundImage: "./assets/images/android-icon-foreground.png",
+      backgroundImage: "./assets/images/android-icon-background.png",
+      monochromeImage: "./assets/images/android-icon-monochrome.png",
+    },
+    edgeToEdgeEnabled: true,
+    predictiveBackGestureEnabled: false,
+  },
+  web: {
+    output: "static",
+    favicon: "./assets/icons/favicon/apple-icon-180x180.png",
+    bundler: "metro",
+  },
+  plugins: [
+    "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        image: "./assets/icons/favicon/apple-icon-180x180.png",
+        imageWidth: 200,
+        resizeMode: "contain",
+        backgroundColor: "#ffffff",
+        dark: {
+          backgroundColor: "#000000",
+        },
+      },
+    ],
+    "expo-secure-store",
+    [
+      "@react-native-seoul/kakao-login",
+      {
+        kakaoAppKey: process.env.EXPO_PUBLIC_KAKAO_APP_KEY ?? "",
+      },
+    ],
+    [
+      "@react-native-seoul/naver-login",
+      {
+        urlScheme: "barfdogapp",
+      },
+    ],
+    [
+      "expo-build-properties",
+      {
+        android: {
+          extraMavenRepos: [
+            "https://devrepo.kakao.com/nexus/content/groups/public/",
+          ],
+        },
+      },
+    ],
+  ],
+  experiments: {
+    typedRoutes: true,
+    reactCompiler: true,
+  },
+  extra: {
+    router: {},
+    eas: {
+      projectId: "d58a6650-e4bb-4e18-89fb-a36de1c47184",
+    },
+  },
+};
+
+export default config;

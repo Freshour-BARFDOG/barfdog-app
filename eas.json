@@ -11,7 +11,8 @@
       "ios": { "simulator": false },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://renewal-dev.barfdogserver.com",
-        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr"
+        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr",
+        "EXPO_PUBLIC_NAVER_APP_NAME": "barfdog"
       }
     },
     "ios-simulator": {
@@ -19,7 +20,8 @@
       "ios": { "simulator": true },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://renewal-dev.barfdogserver.com",
-        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr"
+        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr",
+        "EXPO_PUBLIC_NAVER_APP_NAME": "barfdog"
       }
     },
     "preview": {
@@ -27,14 +29,16 @@
       "android": { "buildType": "apk" },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://renewal-dev.barfdogserver.com",
-        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr"
+        "EXPO_PUBLIC_WEB_BASE_URL": "https://dev.barfdog.co.kr",
+        "EXPO_PUBLIC_NAVER_APP_NAME": "barfdog"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://www.barfdogserver.com",
-        "EXPO_PUBLIC_WEB_BASE_URL": "https://www.barfdog.co.kr"
+        "EXPO_PUBLIC_WEB_BASE_URL": "https://www.barfdog.co.kr",
+        "EXPO_PUBLIC_NAVER_APP_NAME": "barfdog"
       }
     }
   },
