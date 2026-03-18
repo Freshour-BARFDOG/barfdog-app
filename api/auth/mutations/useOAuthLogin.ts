@@ -1,18 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
 import { login as kakaoLogin } from "@react-native-seoul/kakao-login";
 import NaverLogin from "@react-native-seoul/naver-login";
-import { router } from "expo-router";
 
 import { loginWithOAuthToken } from "@/api/auth/oauth";
 import { NAVER_CONFIG, type SnsProvider } from "@/config/oauth";
-import { TokenStorage } from "@/utils/auth/tokenStorage";
 import type { UseMutationCustomOptions } from "@/types";
+
+interface UseOAuthLoginOptions {
+  signIn: (token: string) => Promise<void>;
+  mutationOptions?: UseMutationCustomOptions;
+}
 
 /**
  * 네이티브 SDK로 OAuth access_token을 얻은 후
  * 백엔드에 전달하여 JWT를 받는 mutation.
  */
-export function useOAuthLogin(mutationOptions?: UseMutationCustomOptions) {
+export function useOAuthLogin({ signIn, mutationOptions }: UseOAuthLoginOptions) {
   return useMutation({
     mutationFn: async (provider: SnsProvider) => {
       // ① 네이티브 SDK로 OAuth access_token 획득
@@ -23,17 +26,15 @@ export function useOAuthLogin(mutationOptions?: UseMutationCustomOptions) {
     },
 
     onSuccess: async ({ response, token }) => {
-      if (token) {
-        await TokenStorage.setAccessToken(token);
-      }
-
       const result = response.data?.result;
 
       switch (result) {
         case "ALREADY_LINKED":
         case "NEWLY_LINKED":
         case "NEW_ACCOUNT_AND_LINKED":
-          router.replace("/");
+          if (token) {
+            await signIn(token);
+          }
           break;
 
         case "LINK_PROVIDER_CONFLICT":

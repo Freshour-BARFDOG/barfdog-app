@@ -1,5 +1,6 @@
 import { useLogin } from "@/api/auth/queries/useLogin";
 import { useOAuthLogin } from "@/api/auth/mutations/useOAuthLogin";
+import { useSession } from "@/components/domain/auth/SessionProvider";
 import Button from "@/components/ui/button/Button";
 import { SocialLoginButtons } from "@/components/ui/button/SocialLoginButton";
 import InputField from "@/components/ui/input/InputField";
@@ -10,7 +11,6 @@ import {
   LoginValues,
 } from "@/utils/validation/auth/login";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import {
   Keyboard,
@@ -22,8 +22,9 @@ import {
 } from "react-native";
 
 export default function LoginForm() {
+  const { signIn } = useSession();
   const { mutate: login } = useLogin();
-  const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuthLogin();
+  const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuthLogin({ signIn });
   const {
     control,
     handleSubmit,
@@ -37,12 +38,10 @@ export default function LoginForm() {
     login(
       { email: data.email, password: data.password },
       {
-        onSuccess: () => {
-          console.log("🎉 로그인 성공, 홈으로 이동");
-          // 토큰 저장 후 약간의 지연을 두고 이동 (안정성)
-          setTimeout(() => {
-            router.replace("/");
-          }, 100);
+        onSuccess: async ({ token }) => {
+          if (token) {
+            await signIn(token);
+          }
         },
         onError: (error) => {
           console.error("❌ 로그인 실패:", error);

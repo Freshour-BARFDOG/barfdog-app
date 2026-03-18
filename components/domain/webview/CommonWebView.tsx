@@ -1,7 +1,7 @@
 import { refreshAccessToken } from "@/api/tokenRefresh";
 import { WEBVIEW_MESSAGES } from "@/constants/webview";
+import { useSession } from "@/components/domain/auth/SessionProvider";
 import { useWebViewTokenSync } from "@/hooks/useWebViewTokenSync";
-import { TokenStorage } from "@/utils/auth/tokenStorage";
 import { getUrlHost } from "@/utils/webview/url";
 import { Href, router } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -23,6 +23,7 @@ export default function CommonWebView({
   baseUrl,
   initialPath = "/",
 }: CommonWebViewProps) {
+  const { signOut } = useSession();
   const ref = useRef<WebView>(null);
   const [canGoBack, setCanGoBack] = useState(false);
 
@@ -65,8 +66,7 @@ export default function CommonWebView({
         }
 
         case WEBVIEW_MESSAGES.LOGOUT:
-          await TokenStorage.clearAllTokens();
-          router.replace("/auth/login");
+          await signOut();
           break;
 
         case WEBVIEW_MESSAGES.DEBUG_LOG: {
@@ -81,7 +81,7 @@ export default function CommonWebView({
     } catch (error) {
       console.error("메시지 파싱 실패:", error);
     }
-  }, []);
+  }, [signOut]);
 
   // ─── URL 라우팅 제어 ──────────────────────────────────────────────────────
   const allowedHosts = useMemo(() => {

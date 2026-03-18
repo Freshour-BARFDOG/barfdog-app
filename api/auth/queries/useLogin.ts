@@ -2,18 +2,12 @@ import { login } from "@/api/auth/auth";
 import { UseMutationCustomOptions } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 
-import { TokenStorage } from "@/utils/auth/tokenStorage";
-
 export function useLogin(mutationOptions?: UseMutationCustomOptions) {
   return useMutation({
-    mutationFn: login,
-    onSuccess: async (res: any) => {
+    mutationFn: async (...args: Parameters<typeof login>) => {
+      const res = await login(...args);
       const accessToken = res?.headers?.authorization;
-
-      if (accessToken) {
-        await TokenStorage.setAccessToken(accessToken);
-        console.log("✅ Access Token 저장 완료");
-      }
+      return { response: res, token: accessToken ?? null };
     },
     ...mutationOptions,
   });

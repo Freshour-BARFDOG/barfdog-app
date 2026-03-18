@@ -1,8 +1,8 @@
 import { TOKEN_REFRESHED } from "@/api/tokenRefresh";
+import { useSession } from "@/components/domain/auth/SessionProvider";
 import { WEBVIEW_MESSAGES } from "@/constants/webview";
 import { TokenStorage } from "@/utils/auth/tokenStorage";
 import { setAccessTokenCookie } from "@/utils/webview/cookie";
-import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DeviceEventEmitter } from "react-native";
 import { WebView } from "react-native-webview";
@@ -11,6 +11,7 @@ export function useWebViewTokenSync(
   baseUrl: string,
   webViewRef: React.RefObject<WebView | null>,
 ) {
+  const { signOut } = useSession();
   const [isCookieReady, setIsCookieReady] = useState(false);
   const isTokenInjectedRef = useRef(false);
 
@@ -60,8 +61,7 @@ export function useWebViewTokenSync(
         webViewRef.current?.postMessage(
           JSON.stringify({ type: WEBVIEW_MESSAGES.TOKEN_REFRESH_FAILED }),
         );
-        await TokenStorage.clearAllTokens();
-        router.replace("/auth/login");
+        await signOut();
       },
     );
 
@@ -69,7 +69,7 @@ export function useWebViewTokenSync(
       onRefreshed.remove();
       onFailed.remove();
     };
-  }, [baseUrl]);
+  }, [baseUrl, signOut]);
 
   // ─── WebView 초기 로드 시 토큰 주입 (1회) ───────────────────────────────
   const handleWebViewLoad = useCallback(async () => {
