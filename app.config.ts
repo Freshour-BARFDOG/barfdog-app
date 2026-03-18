@@ -13,6 +13,7 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.freshour.barfdogapp",
+    usesAppleSignIn: true,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -59,6 +60,7 @@ const config: ExpoConfig = {
         urlScheme: "barfdogapp",
       },
     ],
+    "expo-apple-authentication",
     [
       "expo-build-properties",
       {

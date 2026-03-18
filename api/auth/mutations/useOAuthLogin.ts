@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { login as kakaoLogin } from "@react-native-seoul/kakao-login";
 import NaverLogin from "@react-native-seoul/naver-login";
+import * as AppleAuthentication from "expo-apple-authentication";
 
 import { loginWithOAuthToken } from "@/api/auth/oauth";
 import { NAVER_CONFIG, type SnsProvider } from "@/config/oauth";
@@ -83,6 +84,21 @@ async function getOAuthToken(provider: SnsProvider): Promise<string> {
       }
 
       return result.successResponse.accessToken;
+    }
+
+    case "apple": {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (!credential.identityToken) {
+        throw new Error("Apple 로그인 실패: identityToken 없음");
+      }
+
+      return credential.identityToken;
     }
 
     default:

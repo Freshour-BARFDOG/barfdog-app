@@ -1,5 +1,5 @@
-import { useLogin } from "@/api/auth/queries/useLogin";
 import { useOAuthLogin } from "@/api/auth/mutations/useOAuthLogin";
+import { useLogin } from "@/api/auth/queries/useLogin";
 import { useSession } from "@/components/domain/auth/SessionProvider";
 import Button from "@/components/ui/button/Button";
 import { SocialLoginButtons } from "@/components/ui/button/SocialLoginButton";
@@ -24,7 +24,9 @@ import {
 export default function LoginForm() {
   const { signIn } = useSession();
   const { mutate: login } = useLogin();
-  const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuthLogin({ signIn });
+  const { mutate: oauthLogin, isPending: isOAuthPending } = useOAuthLogin({
+    signIn,
+  });
   const {
     control,
     handleSubmit,
@@ -47,7 +49,7 @@ export default function LoginForm() {
           console.error("❌ 로그인 실패:", error);
           // TODO: 에러 메시지 표시 (Toast 또는 Alert)
         },
-      }
+      },
     );
   };
 
@@ -112,7 +114,6 @@ export default function LoginForm() {
               <Button size="lg" onPress={handleSubmit(onSubmit)} fullWidth>
                 로그인
               </Button>
-
               <SocialLoginButtons
                 onPress={(provider) => oauthLogin(provider)}
                 disabled={isOAuthPending}

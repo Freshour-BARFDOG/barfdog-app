@@ -1,6 +1,6 @@
 import { colors } from "@/styles/theme";
 
-export const OAUTH_PROVIDERS = ["kakao", "naver"] as const;
+export const OAUTH_PROVIDERS = ["kakao", "naver", "apple"] as const;
 export type SnsProvider = (typeof OAUTH_PROVIDERS)[number];
 
 export interface OAuthProviderConfig {
@@ -19,6 +19,11 @@ export const OAUTH_PROVIDER_CONFIG: Record<SnsProvider, OAuthProviderConfig> = {
     label: "네이버로 시작하기",
     backgroundColor: colors.naver.background,
     fontColor: colors.naver.font,
+  },
+  apple: {
+    label: "Apple로 시작하기",
+    backgroundColor: colors.apple.background,
+    fontColor: colors.apple.font,
   },
 };
 

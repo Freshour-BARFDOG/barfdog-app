@@ -67,6 +67,10 @@ export const colors = {
     background: '#00C73C',
     font: '#FFFFFF',
   },
+  apple: {
+    background: '#000000',
+    font: '#FFFFFF',
+  },
 } as const;
 
 // Typography

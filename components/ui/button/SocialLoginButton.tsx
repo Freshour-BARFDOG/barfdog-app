@@ -3,7 +3,7 @@ import {
   OAUTH_PROVIDERS,
   type SnsProvider,
 } from "@/config/oauth";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface SocialLoginButtonProps {
   provider: SnsProvider;
@@ -44,7 +44,9 @@ export function SocialLoginButtons({
 }) {
   return (
     <View style={styles.container}>
-      {OAUTH_PROVIDERS.map((provider) => (
+      {OAUTH_PROVIDERS.filter(
+        (provider) => provider !== "apple" || Platform.OS === "ios",
+      ).map((provider) => (
         <SocialLoginButton
           key={provider}
           provider={provider}
