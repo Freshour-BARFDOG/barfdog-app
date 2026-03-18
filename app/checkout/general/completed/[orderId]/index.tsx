@@ -1,13 +1,14 @@
 import CommonWebView from "@/components/domain/webview/CommonWebView";
 import { CHECKOUT_ROUTES } from "@/constants/checkout";
 import { useLocalSearchParams } from "expo-router";
+import { StyleSheet } from "react-native-unistyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GeneralCheckoutCompleted() {
   const { orderId } = useLocalSearchParams<{ orderId: string }>();
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView style={styles.screen}>
       <CommonWebView
         baseUrl={process.env.EXPO_PUBLIC_WEB_BASE_URL!}
         initialPath={CHECKOUT_ROUTES.GENERAL.completed(Number(orderId))}
@@ -15,3 +16,9 @@ export default function GeneralCheckoutCompleted() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+});

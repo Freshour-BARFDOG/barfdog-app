@@ -3,7 +3,8 @@ import {
   OAUTH_PROVIDERS,
   type SnsProvider,
 } from "@/config/oauth";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 
 interface SocialLoginButtonProps {
   provider: SnsProvider;

@@ -20,6 +20,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { StyleSheet } from "react-native-unistyles";
 
 export default function LoginForm() {
   const { signIn } = useSession();
@@ -56,25 +57,24 @@ export default function LoginForm() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
-        className="flex-1"
+        style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0} // 헤더 높이에 맞춰 미세 조정
+        keyboardVerticalOffset={Platform.OS === "ios" ? 12 : 0}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, padding: 20 }}
           keyboardShouldPersistTaps="handled"
-          // iOS RN 0.72+ 에서 자동 인셋 조정
           automaticallyAdjustKeyboardInsets={true}
         >
-          <View className="flex-1 gap-20 items-center justify-center">
-            <View className="gap-4 items-center justify-center">
+          <View style={styles.container}>
+            <View style={styles.titleWrapper}>
               <Text type="title1">👋 안녕하세요 보호자님!</Text>
               <Text type="body3" color="gray500">
                 다양한 맞춤 서비스를 위해 로그인해주세요.
               </Text>
             </View>
 
-            <View className="gap-16 mb-16">
+            <View style={styles.inputWrapper}>
               <Controller
                 control={control}
                 name="email"
@@ -110,7 +110,7 @@ export default function LoginForm() {
                 )}
               />
             </View>
-            <View className="w-full gap-12">
+            <View style={styles.buttonWrapper}>
               <Button size="lg" onPress={handleSubmit(onSubmit)} fullWidth>
                 로그인
               </Button>
@@ -125,3 +125,28 @@ export default function LoginForm() {
     </TouchableWithoutFeedback>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    gap: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  titleWrapper: {
+    gap: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputWrapper: {
+    gap: 16,
+    marginBottom: 16,
+  },
+  buttonWrapper: {
+    width: "100%",
+    gap: 12,
+  },
+});

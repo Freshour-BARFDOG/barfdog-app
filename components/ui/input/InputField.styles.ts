@@ -1,10 +1,9 @@
-import { StyleSheet } from "react-native";
-import { colors } from "@/styles/theme";
+import { StyleSheet } from "react-native-unistyles";
 
-export const inputFieldStyles = StyleSheet.create({
+export const inputFieldStyles = StyleSheet.create((theme) => ({
   // Container
   container: {
-    flexDirection: "column",
+    flexDirection: "column" as const,
     gap: 8,
   },
   containerFullWidth: {
@@ -13,8 +12,8 @@ export const inputFieldStyles = StyleSheet.create({
 
   // Wrapper
   wrapper: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 8,
   },
   wrapperFullWidth: {
@@ -23,8 +22,8 @@ export const inputFieldStyles = StyleSheet.create({
 
   // Field Base
   fieldBase: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     height: 48,
   },
   fieldFlex: {
@@ -38,14 +37,14 @@ export const inputFieldStyles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.gray[300],
-    backgroundColor: colors.gray[0],
+    borderColor: theme.colors.gray[300],
+    backgroundColor: theme.colors.gray[0],
   },
   fieldBoxDisabled: {
-    backgroundColor: colors.gray[200],
+    backgroundColor: theme.colors.gray[200],
   },
   fieldBoxError: {
-    borderColor: colors.red.main,
+    borderColor: theme.colors.red.main,
   },
 
   // Field Variants - Line
@@ -54,20 +53,20 @@ export const inputFieldStyles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.gray[500],
+    borderBottomColor: theme.colors.gray[500],
     backgroundColor: "transparent",
   },
   fieldLineDisabled: {
-    borderBottomColor: colors.gray[400],
+    borderBottomColor: theme.colors.gray[400],
   },
   fieldLineError: {
-    borderBottomColor: colors.red.main,
+    borderBottomColor: theme.colors.red.main,
   },
 
   // Label Container
   labelContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     gap: 4,
   },
 
@@ -80,7 +79,7 @@ export const inputFieldStyles = StyleSheet.create({
 
   // Suffix Buttons Container
   suffixContainer: {
-    flexDirection: "row",
+    flexDirection: "row" as const,
     gap: 12,
   },
 
@@ -94,10 +93,10 @@ export const inputFieldStyles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "500" as const,
     lineHeight: 20,
     letterSpacing: -0.4,
-    color: colors.gray[900],
+    color: theme.colors.gray[900],
     paddingVertical: 0,
   },
 
@@ -111,14 +110,14 @@ export const inputFieldStyles = StyleSheet.create({
     paddingHorizontal: 32,
     height: 48,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
     borderWidth: 1,
-    borderColor: colors.gray[300],
-    backgroundColor: colors.gray[0],
+    borderColor: theme.colors.gray[300],
+    backgroundColor: theme.colors.gray[0],
   },
   confirmButtonDisabled: {
-    backgroundColor: colors.gray[100],
-    borderColor: colors.gray[300],
+    backgroundColor: theme.colors.gray[100],
+    borderColor: theme.colors.gray[300],
   },
-});
+}));

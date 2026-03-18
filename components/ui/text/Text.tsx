@@ -22,18 +22,16 @@ export default function Text({
   children,
   ...rest
 }: Props) {
+  textStyles.useVariants({
+    type,
+    color,
+    align,
+    underline,
+    lineThrough,
+  });
+
   return (
-    <RNText
-      style={[
-        textStyles[type],
-        textStyles[color],
-        textStyles[align],
-        underline && textStyles.underline,
-        lineThrough && textStyles.lineThrough,
-        style,
-      ]}
-      {...rest}
-    >
+    <RNText style={[textStyles.text, style]} {...rest}>
       {children}
     </RNText>
   );

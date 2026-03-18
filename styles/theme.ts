@@ -1,5 +1,3 @@
-import { TextStyle } from 'react-native';
-
 // Colors
 export const colors = {
   red: {
@@ -80,121 +78,121 @@ export const typography = {
     fontSize: 40,
     lineHeight: 40 * 1.6,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   display2: {
     fontSize: 32,
     lineHeight: 32 * 1.5,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   // Title
   title1: {
     fontSize: 28,
     lineHeight: 28 * 1.5,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   title2: {
     fontSize: 24,
     lineHeight: 24 * 1.5,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   title3: {
     fontSize: 22,
     lineHeight: 22 * 1.5,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   title4: {
     fontSize: 20,
     lineHeight: 20 * 1.5,
     letterSpacing: -0.6,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   // Headline
   headline1: {
     fontSize: 18,
     lineHeight: 18 * 1.5,
     letterSpacing: -0.4,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   headline2: {
     fontSize: 16,
     lineHeight: 16 * 1.48,
     letterSpacing: -0.4,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   headline3: {
     fontSize: 16,
     lineHeight: 16 * 1.48,
     letterSpacing: -0.4,
-    fontWeight: '600',
-  } as TextStyle,
+    fontWeight: '600' as const,
+  },
   headline4: {
     fontSize: 14,
     lineHeight: 14 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '600',
-  } as TextStyle,
+    fontWeight: '600' as const,
+  },
   // Label
   label1: {
     fontSize: 18,
     lineHeight: 18 * 1.5,
     letterSpacing: -0.4,
-    fontWeight: '500',
-  } as TextStyle,
+    fontWeight: '500' as const,
+  },
   label2: {
     fontSize: 16,
     lineHeight: 16 * 1.48,
     letterSpacing: -0.4,
-    fontWeight: '500',
-  } as TextStyle,
+    fontWeight: '500' as const,
+  },
   label3: {
     fontSize: 14,
     lineHeight: 14 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '700',
-  } as TextStyle,
+    fontWeight: '700' as const,
+  },
   label4: {
     fontSize: 14,
     lineHeight: 14 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '500',
-  } as TextStyle,
+    fontWeight: '500' as const,
+  },
   // Body
   body1: {
     fontSize: 18,
     lineHeight: 18 * 1.5,
     letterSpacing: -0.4,
-    fontWeight: '400',
-  } as TextStyle,
+    fontWeight: '400' as const,
+  },
   body2: {
     fontSize: 16,
     lineHeight: 16 * 1.48,
     letterSpacing: -0.4,
-    fontWeight: '400',
-  } as TextStyle,
+    fontWeight: '400' as const,
+  },
   body3: {
     fontSize: 14,
     lineHeight: 14 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '400',
-  } as TextStyle,
+    fontWeight: '400' as const,
+  },
   // Caption
   caption: {
     fontSize: 12,
     lineHeight: 12 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '400',
-  } as TextStyle,
+    fontWeight: '400' as const,
+  },
   caption2: {
     fontSize: 12,
     lineHeight: 12 * 1.4,
     letterSpacing: -0.4,
-    fontWeight: '500',
-  } as TextStyle,
+    fontWeight: '500' as const,
+  },
 } as const;
 
 // Shadows (React Native shadow properties)

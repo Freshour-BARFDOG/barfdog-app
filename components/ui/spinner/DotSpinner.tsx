@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import React, { useEffect } from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
   interpolate,
   SharedValue,
 } from "react-native-reanimated";
+import { StyleSheet } from "react-native-unistyles";
 
 interface DotSpinnerProps {
   fullscreen?: boolean;

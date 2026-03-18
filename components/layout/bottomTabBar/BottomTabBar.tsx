@@ -9,6 +9,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { StyleSheet } from "react-native-unistyles";
 
 export default function BottomTabBar({
   state,
@@ -16,7 +17,7 @@ export default function BottomTabBar({
   navigation,
 }: BottomTabBarProps) {
   return (
-    <View className="bg-gray-0 border-t border-gray-100 h-90 pb-8 pt-8 flex-row">
+    <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label = options.tabBarLabel;
@@ -124,14 +125,15 @@ function TabBarItem({ label, isFocused, onPress, icon }: TabBarItemProps) {
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      className="items-center justify-center flex-1"
+      style={styles.tabItem}
     >
       {({ pressed }) => (
         <Animated.View
-          style={animatedStyle}
-          className={`items-center gap-4 rounded-20 py-8 w-64 ${
-            pressed ? "bg-gray-50" : "bg-transparent"
-          }`}
+          style={[
+            styles.tabItemContent,
+            pressed ? styles.tabItemPressed : styles.tabItemDefault,
+            animatedStyle,
+          ]}
         >
           {icon && icon({ focused: isFocused, color, size: 24 })}
           <Text
@@ -146,3 +148,33 @@ function TabBarItem({ label, isFocused, onPress, icon }: TabBarItemProps) {
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create((theme) => ({
+  tabBar: {
+    backgroundColor: theme.colors.gray[0],
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.gray[100],
+    height: 90,
+    paddingBottom: 8,
+    paddingTop: 8,
+    flexDirection: "row",
+  },
+  tabItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  tabItemContent: {
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 20,
+    paddingVertical: 8,
+    width: 64,
+  },
+  tabItemPressed: {
+    backgroundColor: theme.colors.gray[50],
+  },
+  tabItemDefault: {
+    backgroundColor: "transparent",
+  },
+}));

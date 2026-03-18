@@ -1,7 +1,7 @@
 import SpinnerInIcon from "@/assets/icons/spinner/spinner-in.svg";
 import SpinnerOutIcon from "@/assets/icons/spinner/spinner-out.svg";
 import React, { useEffect } from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, ViewStyle } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { StyleSheet } from "react-native-unistyles";
 import SvgIcon from "../svgIcon/SvgIcon";
 
 interface SpinnerProps {

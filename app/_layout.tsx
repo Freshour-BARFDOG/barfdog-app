@@ -2,7 +2,7 @@ import queryClient from "@/api/queryClient";
 import SessionProvider, {
   useSession,
 } from "@/components/domain/auth/SessionProvider";
-import "@/styles/global.css";
+
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
