@@ -19,6 +19,7 @@ const config: ExpoConfig = {
     },
   },
   android: {
+    package: "com.freshour.barfdogapp",
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
       foregroundImage: "./assets/images/android-icon-foreground.png",
